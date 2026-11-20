@@ -10,3 +10,6 @@ data_lake/
 # IDE
 .idea/
 .vscode/
+
+# logs
+logs/
