@@ -201,7 +201,7 @@ if __name__ == "__main__":
     n_stocks = 500 # 类似中证 500 股票池
 
     import pandas as pd
-    dates = pd.bdate_range("2025-01-01", periods=n_days).date.tolist()
+    dates = [d.date() for d in pd.bdate_range("2025-01-01", periods=n_days)]
     symbols = [f"{s:06d}.SH" for s in range(n_stocks)]
 
     records = []

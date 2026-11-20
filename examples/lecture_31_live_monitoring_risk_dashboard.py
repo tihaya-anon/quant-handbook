@@ -11,7 +11,7 @@ import numpy as np
 
 
 def finite_number(value):
-    return isinstance(value, Real) and np.isfinite(value)
+    return isinstance(value, Real) and bool(np.isfinite(float(value)))
 
 
 @dataclass(frozen=True)
@@ -137,7 +137,8 @@ class AshareRiskMonitoringDashboard:
         report = self.last_report
         if self.tier != 3 or report is None or not report.data_valid:
             raise ValueError('仅允许在数据有效的三级熔断状态复位')
-        if report.current_active_drawdown > self.recovery1_dd + 1e-12:
+        dd = report.current_active_drawdown
+        if dd is None or dd > self.recovery1_dd + 1e-12:
             raise ValueError('尚未恢复至人工复位的回撤阈值')
         if any(a.level == 'CRITICAL' and a.category != 'DRAWDOWN' for a in report.alerts):
             raise ValueError('尚有其他严重告警，不能复位')

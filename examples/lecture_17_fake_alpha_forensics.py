@@ -4,7 +4,7 @@ A 股因子风险排查教学示例 (AshareFakeAlphaSanitizer)
 """
 
 from dataclasses import dataclass
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, cast
 import numpy as np
 import polars as pl
 from scipy import stats
@@ -155,7 +155,7 @@ class AshareFakeAlphaSanitizer:
         )
         ideal_top = top_df.filter(pl.col("_rank") <= pl.col("_top_n"))
         ideal_daily_ret = ideal_top.group_by(self.date_col).agg(pl.col(self.ret_col).mean().alias("r"))
-        ideal_ann_ret = float(ideal_daily_ret["r"].mean() * 250.)
+        ideal_ann_ret = cast(float, ideal_daily_ret["r"].mean()) * 250.
 
         # 每天是从现金发起的一次独立订单实验；未成交权重留现金（收益为 0）。
         # 标记来自订单时点的模拟/真实成交状态，不能用全天最高价或事后涨幅代替。
@@ -163,7 +163,7 @@ class AshareFakeAlphaSanitizer:
             pl.when(pl.col(self.is_limit_up_col) == 0).then(pl.col(self.ret_col))
             .otherwise(0.).mean().alias("r")
         )
-        tradeable_ann_ret = float(tradeable_daily_ret["r"].mean() * 250.)
+        tradeable_ann_ret = cast(float, tradeable_daily_ret["r"].mean()) * 250.
 
         haircut = (ideal_ann_ret - tradeable_ann_ret) / abs(ideal_ann_ret) if abs(ideal_ann_ret) > 1e-12 else float("nan")
         if haircut > 0.40:
@@ -218,7 +218,7 @@ if __name__ == "__main__":
     n_stocks = 500
 
     import pandas as pd
-    dates = pd.bdate_range("2025-01-01", periods=n_days).date.tolist()
+    dates = [d.date() for d in pd.bdate_range("2025-01-01", periods=n_days)]
     symbols = [f"{s:06d}.SH" for s in range(n_stocks)]
 
     records = []

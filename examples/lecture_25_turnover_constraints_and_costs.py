@@ -43,7 +43,8 @@ class AshareTurnoverConstrainedOptimizer(AshareIndexEnhancementOptimizer):
             raise ValueError('ADV 须为正，日波动率须非负，且均为有限数值')
         return self.impact_coef * vol * aum / adv
 
-    def optimize(self, expected_returns, benchmark_weights, prev_weights, exposure_matrix,
+    # 换手版本需要 prev_weights / adv 等额外输入，签名有意与父类不兼容（教学上复用父类的约束构建逻辑）
+    def optimize(self, expected_returns, benchmark_weights, prev_weights, exposure_matrix,  # pyright: ignore[reportIncompatibleMethodOverride]
                  factor_covariance, specific_variance, adv_amount, *, aum, daily_volatility,
                  max_turnover=None, n_industries=6, size_col_idx=6):
         expected_returns, benchmark_weights, exposure_matrix, factor_covariance, specific_variance = validate_risk_inputs(

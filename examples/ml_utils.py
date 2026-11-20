@@ -6,7 +6,7 @@ import polars as pl
 
 def demo_dates(n, start='2025-01-02'):
     """唯一、有序的工作日，仅为合成示例，不是交易所日历。"""
-    return pd.bdate_range(start, periods=n).date.tolist()
+    return [d.date() for d in pd.bdate_range(start, periods=n)]
 
 
 def interval_coordinates(dates, label_end_dates=None, forward_horizon=5):

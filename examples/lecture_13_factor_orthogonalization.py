@@ -3,7 +3,7 @@ A 股教学示例：因子正交化处理器 (AshareFactorOrthogonalizer)
 包含：对称正交化 (Löwdin) 与 施密特顺序正交化 (Gram-Schmidt)
 """
 
-from typing import List, Literal, Tuple, Dict
+from typing import Any, List, Literal, Tuple, Dict
 from datetime import date
 import numpy as np
 import polars as pl
@@ -94,7 +94,7 @@ class AshareFactorOrthogonalizer:
         self,
         F: np.ndarray,
         factor_names: List[str]
-    ) -> Tuple[np.ndarray, Dict[str, float]]:
+    ) -> Tuple[np.ndarray, Dict[str, Any]]:
         """
         核心矩阵正交化运算与诊断指标输出
         """

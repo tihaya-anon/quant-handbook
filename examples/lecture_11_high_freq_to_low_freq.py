@@ -17,8 +17,8 @@ class AshareHighFreqOFIEngine:
         计算单只股票全天日内快照的 OFI 序列 (微观状态机)
         输入包含: [symbol, timestamp, bid_price, bid_vol, ask_price, ask_vol]
         """
-        if (l2_snapshots_df.schema["timestamp"] != pl.Datetime
-                or l2_snapshots_df.schema["timestamp"].time_zone is not None):
+        ts_dtype = l2_snapshots_df.schema["timestamp"]
+        if not isinstance(ts_dtype, pl.Datetime) or ts_dtype.time_zone is not None:
             raise ValueError("timestamp 必须为上海本地无时区 Datetime")
         if l2_snapshots_df.select(pl.struct("symbol", "timestamp").is_duplicated().any()).item():
             raise ValueError("快照的股票时间键必须唯一")

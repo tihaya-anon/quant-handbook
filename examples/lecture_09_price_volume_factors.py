@@ -119,7 +119,7 @@ if __name__ == "__main__":
         for i in range(n_days):
             records.append({
                 "symbol": s,
-                "trade_date": dates[i].date(),
+                "trade_date": pd.Timestamp(dates[i]).date(),
                 "open": opens[i],
                 "high": highs[i],
                 "low": lows[i],

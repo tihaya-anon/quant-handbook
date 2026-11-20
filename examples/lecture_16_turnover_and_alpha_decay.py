@@ -76,7 +76,7 @@ class AshareFactorDecayEngine:
         values = direction * np.array([marginal_ic[int(h)] for h in hs])
         if len(hs) < 3 or not np.isfinite(values).all() or np.any(values <= 0):
             return None, '未拟合：需要至少三个有限、同方向的单日滞后 IC'
-        slope, _, _, _, _ = stats.linregress(hs, np.log(values))
+        slope = float(stats.linregress(hs, np.log(values)).slope)
         if slope >= -1e-10:
             return None, '未拟合：未观察到指数衰减（平坦或上升）'
         return float(np.log(2) / -slope), '描述性指数拟合；未给出置信区间'
@@ -134,7 +134,7 @@ class AshareFactorDecayEngine:
 if __name__ == '__main__':
     import pandas as pd
     rng = np.random.default_rng(42)
-    dates = pd.bdate_range('2025-01-01', periods=200).date.tolist()
+    dates = [d.date() for d in pd.bdate_range('2025-01-01', periods=200)]
     n = 400
     latent = np.zeros((len(dates), n))
     returns = np.zeros_like(latent)

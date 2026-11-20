@@ -9,6 +9,7 @@ dependencies = [
   "polars>=1.39,<2",
   "pyarrow>=17,<24",
   "scipy>=1.14,<2",
+  "scipy-stubs>=1.17.1.5",
 ]
 
 [project.optional-dependencies]
@@ -25,5 +26,7 @@ url = "https://pypi.tuna.tsinghua.edu.cn/simple"
 default = true
 
 [tool.pyright]
+# basedpyright 默认 "recommended" 极严格（大量 reportAny/reportUnknown*），教学示例用 standard 即可
+typeCheckingMode = "standard"
 # 忽略 "None" 不能赋值给 float 等参数类型检查（Pylance 同样读取此配置）
 reportArgumentType = "none"

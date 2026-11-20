@@ -190,7 +190,7 @@ if __name__ == "__main__":
 
     predicted_val = explainer.expected_value + sum_contributions
     row = sample_df.filter((pl.col("trade_date") == target_dt) & (pl.col("symbol") == target_sym))
-    raw_prediction = booster.predict(row.select(factor_names).to_numpy(), raw_score=True)[0]
+    raw_prediction = float(np.asarray(booster.predict(row.select(factor_names).to_numpy(), raw_score=True)).ravel()[0])
     np.testing.assert_allclose(predicted_val, raw_prediction, atol=1e-8)
     print(f"  ──────────────────────────────────────────")
     print(f"  • 基准均值 (Base)  : {explainer.expected_value:+8.5f}")

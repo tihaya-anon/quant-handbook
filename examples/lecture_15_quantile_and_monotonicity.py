@@ -4,7 +4,7 @@ A 股教学示例：因子分层回测引擎 (AshareQuantileBacktestEngine)
 """
 
 from dataclasses import dataclass
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, cast
 import numpy as np
 import polars as pl
 from scipy import stats
@@ -101,7 +101,7 @@ class AshareQuantileBacktestEngine:
         if valid_df.filter(pl.col(forward_ret_col) < -1).height:
             raise ValueError("股票简单收益率不能小于 -100%")
         counts = valid_df.group_by(self.date_col).len()
-        if counts["len"].min() < self.n_quantiles:
+        if cast(int, counts["len"].min()) < self.n_quantiles:
             raise ValueError("截面股票数少于分组数")
         # 同分按 symbol 稳定破同分；此时组间差异不代表因子能区分同分股票。
         binned_df = valid_df.with_columns(
@@ -226,7 +226,7 @@ if __name__ == "__main__":
     n_stocks = 600
 
     import pandas as pd
-    dates = pd.bdate_range("2025-01-01", periods=n_days).date.tolist()
+    dates = [d.date() for d in pd.bdate_range("2025-01-01", periods=n_days)]
     symbols = [f"{s:06d}.SH" for s in range(n_stocks)]
 
     records = []

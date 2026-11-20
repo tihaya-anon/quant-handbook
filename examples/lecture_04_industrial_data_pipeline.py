@@ -1,6 +1,7 @@
 """AkShare 接入适配与 Parquet 落库。默认不联网，使用 --fetch 才下载样本。"""
-from datetime import datetime
+from datetime import date, datetime
 from pathlib import Path
+from typing import cast
 import time
 from uuid import uuid4
 from zoneinfo import ZoneInfo
@@ -34,7 +35,7 @@ class IndustrialAshareDataPipeline:
 
     def _api(self):
         if self.api is None:
-            import akshare
+            import akshare  # pyright: ignore[reportMissingImports]  # 可选依赖：uv sync --extra data
             self.api = akshare
         return self.api
 
@@ -90,7 +91,7 @@ class IndustrialAshareDataPipeline:
         require_columns(weights, ['asof_date', 'weight'])
         if weights.is_empty() or weights['asof_date'].n_unique() != 1:
             raise ValueError('一次写入必须是同一日期的完整成分股快照')
-        if weights['asof_date'].null_count() or weights['asof_date'].max() > observed_at.date():
+        if weights['asof_date'].null_count() or cast(date, weights['asof_date'].max()) > observed_at.date():
             raise ValueError('快照日期为空或晚于观测时间')
         if observed_at.tzinfo is not None:
             raise ValueError('observed_at 需先转换为上海本地无时区时间')

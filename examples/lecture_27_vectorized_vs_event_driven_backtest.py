@@ -193,6 +193,7 @@ class AshareEventDrivenBacktester:
             self.used_liquidity[(symbol, direction)] = self.used_liquidity.get((symbol, direction), 0) + filled
             self.daily_fees += fee
         status = OrderStatus.REJECTED if not ok else OrderStatus.FILLED if filled == requested else OrderStatus.PARTIAL
+        assert self.current_date is not None
         self.orders.append(Order(len(self.orders) + 1, self.current_date.isoformat(), symbol,
             OrderDirection(direction), requested, filled, price, fee, status, reason))
 

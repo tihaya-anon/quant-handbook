@@ -100,10 +100,10 @@ class AshareBacktestSanitizer:
                 symbol = row["symbol"]
                 buy = row["signal"] == 1 and shares[symbol] == 0
                 sell = row["signal"] == 0 and shares[symbol] > 0
-                suspended = ("volume" in row and (pd.isna(row["volume"]) or row["volume"] <= 0))
+                suspended = bool("volume" in row and (pd.isna(row["volume"]) or row["volume"] <= 0))
                 if enforce_liquidity_constraints:
-                    buy = buy and not suspended and (not row["is_limit_up"] or self.rules.can_buy_on_limit_up)
-                    sell = sell and not suspended and (not row["is_limit_down"] or self.rules.can_sell_on_limit_down)
+                    buy = buy and not suspended and (not bool(row["is_limit_up"]) or self.rules.can_buy_on_limit_up)
+                    sell = sell and not suspended and (not bool(row["is_limit_down"]) or self.rules.can_sell_on_limit_down)
                 if buy:
                     shares[symbol] = cash[symbol] / (row["open"] * (1 + buy_cost))
                     cash[symbol] = 0.0

@@ -3,7 +3,8 @@
 支持：LambdaMART 排序学习与鲁棒 Huber 回归目标、日期 Group 自动聚合、标签区间检查与早停验证
 """
 
-from typing import Dict, List, Literal, Optional, Tuple
+from datetime import date
+from typing import Dict, List, Literal, Optional, Tuple, cast
 import numpy as np
 import polars as pl
 import lightgbm as lgb
@@ -117,7 +118,8 @@ class AshareLightGBMRanker:
                 raise ValueError("训练标签必须有限且已提供结算日期")
             if frame.filter(pl.col(label_end_col) < pl.col(date_col)).height:
                 raise ValueError("标签结算日期不能早于特征日期")
-        if train_df[date_col].max() >= val_df[date_col].min() or train_df[label_end_col].max() >= val_df[date_col].min():
+        val_start = cast(date, val_df[date_col].min())
+        if cast(date, train_df[date_col].max()) >= val_start or cast(date, train_df[label_end_col].max()) >= val_start:
             raise ValueError("训练标签与验证区间重叠，请先执行 Purging")
         if val_df[label_end_col].max() >= available_at:
             raise ValueError("早停验证标签在模型可用日期之前尚未成熟")
@@ -146,7 +148,7 @@ class AshareLightGBMRanker:
         """
         assert self.model is not None, "模型尚未训练，请先调用 fit()!"
         X = df.select(self.feature_names).to_numpy()
-        return self.model.predict(X, num_iteration=self.model.best_iteration)
+        return np.asarray(self.model.predict(X, num_iteration=self.model.best_iteration))
 
     def get_feature_importance(self) -> pl.DataFrame:
         """
@@ -233,6 +235,7 @@ if __name__ == "__main__":
     ])
     daily_ic = ranked_val.group_by("trade_date").agg(pl.corr("p_rank", "y_rank").alias("rank_ic"))
     mean_val_ic = float(daily_ic["rank_ic"].mean())
+    assert ranker.model is not None
 
     print(f"✅ 验证集平均 Rank IC: {mean_val_ic:8.4f} (树模型最佳迭代步数: {ranker.model.best_iteration})")
 
