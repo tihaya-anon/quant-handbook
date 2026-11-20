@@ -9,7 +9,18 @@ export default withMermaid(
     description: '从数据、特征、AI 到指增实盘闭环',
     
     appearance: 'dark',
-    head: [['link', { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' }]],
+    head: [
+      ['link', { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' }],
+      // 在首屏渲染前恢复侧栏收起状态，避免刷新时侧栏闪现（与 theme/Layout.vue 的 STORE_KEY 保持一致）
+      ['script', {}, `;(() => {
+        try {
+          const s = JSON.parse(localStorage.getItem('quant-handbook:layout') || '{}')
+          const c = document.documentElement.classList
+          if (s.sidebar) c.add('hide-sidebar')
+          if (s.aside) c.add('hide-aside')
+        } catch {}
+      })()`]
+    ],
     ignoreDeadLinks: true,
 
     // 启用内置数学公式 (MathJax) 与代码行号
