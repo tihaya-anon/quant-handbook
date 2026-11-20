@@ -29,6 +29,22 @@ class AsharePriceVolumeFactorEngine:
         # 转换为惰性执行图
         lazy_df = daily_bars_df.lazy().sort(["symbol", "trade_date"])
 
+        # ATR 用的复权价：原始 high/low 乘以复权因子 (close_hfq / close)
+        adj = pl.col("close_hfq") / pl.col("close")
+        high_adj = pl.col("high") * adj
+        low_adj = pl.col("low") * adj
+        prev_close_hfq = pl.col("close_hfq").shift(1).over("symbol")
+
+        # 真实波幅 True Range = max(H-L, |H-前收|, |L-前收|)
+        # 注意：pl.max 是纵向聚合函数，逐元素取最大要用 pl.max_horizontal
+        true_range = pl.max_horizontal(
+            high_adj - low_adj,
+            (high_adj - prev_close_hfq).abs(),
+            (low_adj - prev_close_hfq).abs(),
+        )
+        # 每只股票首行没有前收，TR 置空 (max_horizontal 会把 null 当缺失忽略)
+        true_range = pl.when(prev_close_hfq.is_null()).then(None).otherwise(true_range)
+
         factors_lazy = lazy_df.with_columns([
             # ================= 1. 动量与反转体系 =================
             # 1日收益率 (日收益)
@@ -84,7 +100,17 @@ class AsharePriceVolumeFactorEngine:
                 )
                 .rolling_mean(window_size=20)
                 .over("symbol")
-            ).alias("amihud_illiq_20d")
+            ).alias("amihud_illiq_20d"),
+
+            # ================= 5. 真实波幅 ATR =================
+            # ATR20 = 过去 20 日真实波幅 (TR) 的简单移动平均
+            (true_range.rolling_mean(window_size=20).over("symbol")).alias("atr20"),
+            # 归一化 ATR：ATR20 / 最新复权收盘价，便于截面比较
+            (
+                true_range.rolling_mean(window_size=20).over("symbol")
+                / pl.col("close_hfq")
+            ).alias("atr20_pct"),
+            
         ])
 
         # 触发物理计算
@@ -142,5 +168,5 @@ if __name__ == "__main__":
     print("\n" + "=" * 90)
     print(f"标的 {sample_sym} 最新特征计算切片抽样：")
     print("=" * 90)
-    cols_to_show = ["symbol", "trade_date", "close", "rev_20d", "ret_overnight", "ret_intraday", "volatility_20d", "neg_max_20d", "amihud_illiq_20d"]
+    cols_to_show = ["symbol", "trade_date", "close", "rev_20d", "ret_overnight", "ret_intraday", "volatility_20d", "neg_max_20d", "amihud_illiq_20d", "atr20", "atr20_pct"]
     print(sample_res.select(cols_to_show))
