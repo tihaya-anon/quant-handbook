@@ -19,3 +19,11 @@ optimization = ["cvxpy>=1.8,<2"]
 
 [tool.uv]
 package = false
+
+[[tool.uv.index]]
+url = "https://pypi.tuna.tsinghua.edu.cn/simple"
+default = true
+
+[tool.pyright]
+# 忽略 "None" 不能赋值给 float 等参数类型检查（Pylance 同样读取此配置）
+reportArgumentType = "none"
