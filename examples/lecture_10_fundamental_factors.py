@@ -24,6 +24,29 @@ class AshareFundamentalFactorEngine:
         print("[*] 正在计算买方基本面与杜邦质量特征矩阵...")
         t0 = time.perf_counter()
 
+        # ---- 可复用的因子算子 (pl.Expr 是不可变对象，可重复引用) ----
+        # 杜邦三因子：先定义表达式，后面既可以直接 alias 成列，也可以参与 rank
+        dupont_margin_expr = (
+            pl.col("net_profit_ttm")
+            / pl.when(pl.col("revenue_ttm") > 0).then(pl.col("revenue_ttm")).otherwise(None)
+        )
+        dupont_turnover_expr = (
+            pl.col("revenue_ttm")
+            / pl.when(pl.col("total_assets") > 0).then(pl.col("total_assets")).otherwise(None)
+        )
+        dupont_leverage_expr = (
+            pl.col("total_assets")
+            / pl.when(pl.col("total_equity") > 0).then(pl.col("total_equity")).otherwise(None)
+        )
+
+        # 杜邦 Rank 打分：高净利率 + 高周转 - 高杠杆
+        # 面板数据必须按 trade_date 分组做截面 rank；单日宽表时 over 不产生额外影响
+        quality_score_expr = (
+            dupont_margin_expr.rank().over("trade_date")
+            + dupont_turnover_expr.rank().over("trade_date")
+            - dupont_leverage_expr.rank().over("trade_date")
+        )
+
         factors_df = snapshot_df.lazy().with_columns([
             # ================= 1. 估值价值体系 (EP / BP / OCFP) =================
             # 市盈率倒数 EP (盈利收益率)
@@ -35,11 +58,11 @@ class AshareFundamentalFactorEngine:
 
             # ================= 2. 杜邦质量分析三因子拆解 =================
             # 销售净利率 (Net Profit Margin)
-            (pl.col("net_profit_ttm") / pl.when(pl.col("revenue_ttm") > 0).then(pl.col("revenue_ttm")).otherwise(None)).alias("dupont_margin"),
+            dupont_margin_expr.alias("dupont_margin"),
             # 总资产周转率 (Asset Turnover)
-            (pl.col("revenue_ttm") / pl.when(pl.col("total_assets") > 0).then(pl.col("total_assets")).otherwise(None)).alias("dupont_turnover"),
+            dupont_turnover_expr.alias("dupont_turnover"),
             # 权益乘数 (Financial Leverage)
-            (pl.col("total_assets") / pl.when(pl.col("total_equity") > 0).then(pl.col("total_equity")).otherwise(None)).alias("dupont_leverage"),
+            dupont_leverage_expr.alias("dupont_leverage"),
             # 最终 ROE 综合指标
             (pl.col("net_profit_ttm") / pl.when(pl.col("total_equity") > 0).then(pl.col("total_equity")).otherwise(None)).alias("roe_ttm"),
 
@@ -56,7 +79,10 @@ class AshareFundamentalFactorEngine:
             (
                 (pl.col("net_profit_q") - pl.col("net_profit_ly_same_q")) /
                 pl.when(pl.col("net_profit_ly_same_q").abs() > 0).then(pl.col("net_profit_ly_same_q").abs()).otherwise(None)
-            ).alias("profit_yoy_growth")
+            ).alias("profit_yoy_growth"),
+
+            # Dupont Rank
+            quality_score_expr.alias("quality_score")
         ]).collect()
 
         elapsed = time.perf_counter() - t0
@@ -117,5 +143,5 @@ if __name__ == "__main__":
     print("=" * 95)
     print("三类不同商业质量标的的杜邦拆解与基本面特征对比：")
     print("=" * 95)
-    cols = ["symbol", "factor_ep_ttm", "roe_ttm", "dupont_margin", "dupont_turnover", "dupont_leverage", "cash_to_profit_ratio"]
+    cols = ["symbol", "factor_ep_ttm", "roe_ttm", "dupont_margin", "dupont_turnover", "dupont_leverage", "cash_to_profit_ratio", "quality_score"]
     print(result.select(cols))
