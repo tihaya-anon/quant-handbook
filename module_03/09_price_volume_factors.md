@@ -21,7 +21,7 @@ tags: ["量价因子", "动量反转", "Amihud非流动性", "MAX异象", "行�
 ### 1.1 A 股的“短期反转” vs 美股的“中期动量”：截然相反的微观动力学
 
 - **美股市场（机构定价为主）**：  
-  杰加迪什与蒂特曼（Jegadeesh & Titman, 1993, *Journal of Finance*）发现了著名的**“中期动量效应（Momentum Effect）”**——过去 3~12 个月表现优异的股票在未来 1~6 个月会继续跑赢基准。其底层机理在于机构投资者的“盈余公告反应不足（PEAD）”和长期持续建仓行为。
+  杰加迪什与蒂特曼（Jegadeesh & Titman, 1993, *Journal of Finance*）发现了著名的 **“中期动量效应（Momentum Effect）”**——过去 3\~12 个月表现优异的股票在未来 1\~6 个月会继续跑赢基准。其底层机理在于机构投资者的“盈余公告反应不足（PEAD）”和长期持续建仓行为。
 - **A 股市场（高换手博弈与散户处置效应）**：  
   A 股在 5 日、10 日、20 日中短周期上呈现**极强的截面反转特征（Short-Term Mean Reversion）**。
   - **处置效应（Disposition Effect）**：散户投资者倾向于急于卖出微小盈利的股票（落袋为安），而长期死扛亏损股票。当一只股票短期暴涨 20% 时，会触发海量获利盘汹涌砸盘。
@@ -59,7 +59,7 @@ $$\text{Factor}_{RevK}(t) = - Ret_K(t) \quad (K \in \{5, 10, 20\})$$
 ---
 
 ### 2.2 隔夜与日内动量解耦（Overnight vs Intraday Decoupling）
-Lou, Yan, & Zhang (2019, *Journal of Financial Economics*) 提出的收益分解理论指出：全天总收益由**隔夜跳空（非交易时段信息积累）**与**日内连续交易收益（算法拆单执行）**驱动，二者驱动主体截然不同：
+Lou, Yan, & Zhang (2019, *Journal of Financial Economics*) 提出的收益分解理论指出：全天总收益由**隔夜跳空（非交易时段信息积累）** 与**日内连续交易收益（算法拆单执行）** 驱动，二者驱动主体截然不同：
 
 $$1 + R_{total,t} = \left(1 + R_{overnight,t}\right) \times \left(1 + R_{intraday,t}\right)$$
 

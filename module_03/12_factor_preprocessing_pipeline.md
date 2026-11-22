@@ -114,7 +114,7 @@ $$\mathbf{X} = \Big[ \ln(\text{FloatCap}), \; \mathbf{I}_{:, 1}, \; \mathbf{I}_{
 #### WLS 回归目标函数：
 $$\min_{\boldsymbol{\beta}} \sum_{i=1}^N w_i \left( y_i - \mathbf{x}_i^T \boldsymbol{\beta} \right)^2 \iff \min_{\boldsymbol{\beta}} (\mathbf{y} - \mathbf{X}\boldsymbol{\beta})^T \mathbf{W} (\mathbf{y} - \mathbf{X}\boldsymbol{\beta})$$
 
-其中权重矩阵 $\mathbf{W} = \operatorname{diag}(w_1, \dots, w_N)$，买方机构通常采用**股票流通市值的平方根（$\sqrt{\text{Cap}_i}$）**作为加权权重。
+其中权重矩阵 $\mathbf{W} = \operatorname{diag}(w_1, \dots, w_N)$，买方机构通常采用**股票流通市值的平方根（$\sqrt{\text{Cap}_i}$）** 作为加权权重。
 
 #### WLS 加权正交条件的严格数学证明：
 对目标函数求偏导并令其为 0：
