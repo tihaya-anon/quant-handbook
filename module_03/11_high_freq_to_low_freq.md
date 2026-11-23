@@ -108,7 +108,7 @@ $$\text{OFI}_{daily} = \frac{\sum_{n=1}^N OFI_n}{\frac{1}{N} \sum_{n=1}^N (V_{bi
 
 - **行为机理**：机构大资金下单倾向于使用算法拆单（VWAP/TWAP），单笔成交量大，买入时更具耐受力；散户交易多为小额随机冲动。
 - **构建步骤**：
-  1. 将每日 240 根分钟 Bar 按**成交量与价格变动的复合强度（Smart Metric $S_t = |R_t| / \sqrt{V_t}$）** 降序排列；
+  1. 将每日 240 根分钟 Bar 按**成交量与价格变动的复合强度（Smart Metric $S_t = |R_t| / \sqrt{V_t}$）**降序排列；
   2. 截取前 20% 成交量最集中的“聪明钱交易时段”；
   3. 计算该时段的成交量加权平均价 $VWAP_{smart}$ 与全天成交量加权平均价 $VWAP_{all}$ 的比值：
      $$Q_{smart} = \frac{VWAP_{smart}}{VWAP_{all}}$$

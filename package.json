@@ -9,6 +9,7 @@
     "test:examples": "uv run --locked --extra ml --extra deep --extra optimization python -m unittest discover -s tests -v"
   },
   "devDependencies": {
+    "markdown-it-cjk-friendly": "^3.0.0",
     "markdown-it-mathjax3": "^4.3.2",
     "mermaid": "^11.4.1",
     "vitepress": "^1.5.0",

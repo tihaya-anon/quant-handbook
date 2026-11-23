@@ -1,6 +1,7 @@
 import { defineConfig } from 'vitepress'
 import { withMermaid } from 'vitepress-plugin-mermaid'
 import { modules } from './curriculum'
+import cjkFriendly from 'markdown-it-cjk-friendly'
 
 export default withMermaid(
   defineConfig({
@@ -28,6 +29,8 @@ export default withMermaid(
       math: true,
       lineNumbers: true,
       config(md) {
+        // 修复 CJK 标点紧邻 ** / * 时加粗、斜体无法闭合的问题（CommonMark flanking 规则）
+        md.use(cjkFriendly)
         const renderFence = md.renderer.rules.fence!
         md.renderer.rules.fence = (...args) => {
           const rendered = renderFence(...args)

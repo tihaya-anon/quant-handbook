@@ -10,7 +10,7 @@ tags: ["因子换手率", "自相关性", "Alpha衰减", "半衰期", "调仓周
 # 第 16 讲：因子换手率与衰减曲线（Alpha Decay）
 
 > **本讲核心目标**：  
-> 深刻理解“换手率吞噬 Alpha”的微观机理；从数学底层严格区分**累计持有期 IC（Cumulative IC）** 与**单日滞后边际 IC（Marginal IC）** 的本质差异；推导**信息半衰期（Half-life）** 的指数拟合算法；严格区分名单替换率（Membership Replacement）与真实资产组合换手率（Portfolio Turnover）；构建不同调仓周期在全真 A 股交易摩擦下的净超额情景推演引擎。
+> 深刻理解“换手率吞噬 Alpha”的微观机理；从数学底层严格区分**累计持有期 IC（Cumulative IC）**与**单日滞后边际 IC（Marginal IC）**的本质差异；推导**信息半衰期（Half-life）**的指数拟合算法；严格区分名单替换率（Membership Replacement）与真实资产组合换手率（Portfolio Turnover）；构建不同调仓周期在全真 A 股交易摩擦下的净超额情景推演引擎。
 
 ---
 

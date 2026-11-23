@@ -206,6 +206,6 @@ python3 -m examples.lecture_24_cvxpy_portfolio_optimization
 | :--- | :--- | :--- |
 | **为什么个股主动偏离下限是 $-w_{b, i}$？** | A 股公募与普通私募严禁卖空（$w_i \ge 0$），主动权重 $h_i = w_i - w_{b, i} \ge -w_{b, i}$。 | 随意将下限设为固定的 $-1\%$，导致基准中权重仅 $0.2\%$ 的小盘股被优化出负绝对权重（非法裸卖空）。 |
 | **因子边际风险贡献（FMCAR）在组合风控中有何作用？** | 解析计算 $\text{FMCAR} = F x_{PA} / \sigma_P$，能够穿透了解每 1 单位因子暴露增加对主动跟踪误差的边际拉升作用。 | 仅关注单因子暴露大小，忽视了因子之间协方差联动对跟踪误差的放大。 |
-| ** Clarabel 求解器相比 OSQP 的本质区别？** | Clarabel 支持二阶锥（SOCP），能够严格处理形如 $\mathbf{h}^T \boldsymbol{\Sigma} \mathbf{h} \le \text{TE}_{\max}^2$ 的二次约束；OSQP 仅支持仿射线性约束。 | 在包含二次不等式约束时强行指定 `solver=cp.OSQP`，导致求解器抛出不支持的锥异常。 |
+| **Clarabel 求解器相比 OSQP 的本质区别？** | Clarabel 支持二阶锥（SOCP），能够严格处理形如 $\mathbf{h}^T \boldsymbol{\Sigma} \mathbf{h} \le \text{TE}_{\max}^2$ 的二次约束；OSQP 仅支持仿射线性约束。 | 在包含二次不等式约束时强行指定 `solver=cp.OSQP`，导致求解器抛出不支持的锥异常。 |
 
 在下一讲中，我们将进入 **第 25 讲：换手率约束与交易成本惩罚项引入**，将线性佣金税费与非线性市场冲击摩擦直接作为惩罚项编入凸优化目标函数！
